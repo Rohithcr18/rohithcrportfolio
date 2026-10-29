@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rohith C R</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --display:'Syne','Segoe UI',system-ui,sans-serif;
+  --body:'DM Sans','Segoe UI',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+  --bg:#000; --win:#0a0a0a; --bar:#141414; --bar2:#1c1c1c; --line:#ffffff24;
+  --text:#fff; --muted:#a3a3a3; --dim:#6b6b6b;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--body);color:var(--text);background:var(--bg);overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit}
+::selection{background:#fff;color:#000}
+:focus-visible{outline:2px solid #fff;outline-offset:3px}
+*{scrollbar-width:thin;scrollbar-color:#444 transparent}
+
+/* WINDOW */
+.app{width:100vw;height:100vh;background:var(--win);display:grid;grid-template-rows:46px 36px 1fr 130px}
+.title{font-family:var(--mono);background:var(--bar);display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid var(--line);font-size:.78rem;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:50%}
+.title b{margin:0 auto;font-weight:500;letter-spacing:.06em}
+.open{display:flex;align-items:center;gap:8px;color:#FFD700;letter-spacing:.08em;font-weight:900;animation:blink 3s infinite}
+.open::before{content:"";width:8px;height:8px;border-radius:50%;background:#FFD700;animation:blink 3s infinite}
+@keyframes blink{50%{opacity:.15}}
+
+/* BODY */
+.body{display:grid;grid-template-columns:104px 1fr;min-height:0}
+.rail{background:var(--win);border-right:1px solid var(--line);display:flex;flex-direction:column;gap:6px;padding:14px 10px}
+.rail button{font-family:var(--mono);display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 4px;border-radius:12px;
+  font-size:.74rem;letter-spacing:.04em;color:var(--muted);transition:.25s var(--ease);border:1px solid transparent}
+.rail button b{font-weight:500;font-size:.66rem;color:var(--dim);transition:.25s}
+.rail button:hover{color:#fff;background:var(--bar)}
+.rail button.on{background:#FFD700;color:#000}
+.rail button.on b{color:#000}
+
+.stage{position:relative;overflow:auto;padding:60px 6vw;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='26'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23ffffff' fill-opacity='.11'/%3E%3C/svg%3E")}
+.panel{display:none;max-width:100%}
+.panel.on{display:block}
+.panel.on>*{animation:rise .7s var(--ease) both}
+.panel.on>*:nth-child(2){animation-delay:.07s}
+.panel.on>*:nth-child(3){animation-delay:.14s}
+.panel.on>*:nth-child(4){animation-delay:.21s}
+.panel.on>*:nth-child(5){animation-delay:.28s}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}}
+
+.tag{font-family:var(--mono);color:#fff;font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.tag::before{content:"";width:34px;height:1px;background:#fff}
+h1,h2,h3{font-family:var(--display);letter-spacing:-.025em}
+h1{font-size:clamp(1.8rem,4vw,3.5rem);line-height:1.02;margin-bottom:22px;font-weight:800}
+h2{font-size:clamp(2rem,3.6vw,3rem);line-height:1.05;margin-bottom:26px;font-weight:700}
+.section-header{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.g{color:#000;background:#FFD700;padding:0 .14em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+p.sub{color:var(--muted);font-size:1.08rem;max-width:100%;margin-bottom:30px;line-height:1.7}
+
+.btn{font-family:var(--display);letter-spacing:.02em;display:inline-block;padding:14px 30px;border-radius:40px;font-weight:700;background:#FFD700;color:#000;
+  margin:0 12px 12px 0;transition:.3s var(--ease);text-decoration:none;border:1px solid #FFD700}
+.btn:hover{transform:translateY(-4px);box-shadow:0 14px 30px #FFD7004e}
+.btn.ghost{background:none;color:#fff;border-color:#ffffff66}
+.btn.ghost:hover{background:#fff;color:#000}
+.chip{font-family:var(--mono);display:inline-block;padding:9px 16px;border-radius:30px;border:1px solid var(--line);font-size:.8rem;margin:0 8px 10px 0;color:var(--muted);transition:.25s}
+.chip:hover{background:#fff;color:#000;border-color:#fff}
+
+/* MEDIA GRID */
+.media-category{margin-bottom:50px}
+.media-category h3{font-family:var(--display);font-size:1.5rem;font-weight:700;margin-bottom:20px;color:#FFD700}
+.media-filter-buttons{display:flex;gap:15px;margin-bottom:30px}
+.filter-btn{font-family:var(--display);padding:12px 28px;border-radius:30px;font-weight:700;background:transparent;color:#fff;border:2px solid #ffffff40;cursor:pointer;transition:all .3s var(--ease)}
+.filter-btn:hover{border-color:#FFD700;color:#FFD700}
+.filter-btn.active{background:#FFD700;color:#000;border-color:#FFD700}
+.media-category.hidden{display:none}
+.media-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:20px}
+.media-grid.grid-4{grid-template-columns:repeat(4,1fr)}
+.media-grid video,.media-grid img{width:100%;height:auto;border-radius:12px;background:#111;border:1px solid var(--line);aspect-ratio:auto;cursor:pointer;transition:transform .3s var(--ease)}
+.media-grid video:hover,.media-grid img:hover{transform:scale(1.05)}
+
+.script-link{text-decoration:none}
+.script-card{width:100%;height:120px;background:#111;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;transition:all .3s var(--ease)}
+.script-card:hover{background:#FFD700;border-color:#FFD700}
+.script-card span{font-family:var(--mono);font-size:1rem;color:#fff;transition:color .3s}
+.script-card:hover span{color:#000}
+
+/* VIDEO MODAL */
+.video-modal{display:none;position:fixed;z-index:1000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.95);align-items:center;justify-content:center;padding:40px}
+.video-modal.active{display:flex}
+.video-modal video{max-width:90vw;max-height:90vh;border-radius:12px}
+.close-modal{position:absolute;top:20px;right:30px;color:#fff;font-size:40px;cursor:pointer;z-index:1001;transition:color .3s}
+.close-modal:hover{color:#FFD700}
+
+/* SLIDESHOW */
+.slideshow-container{position:relative;width:100%;aspect-ratio:16/10;border-radius:16px;background:#050505;border:1px solid #ffffff40;overflow:hidden}
+.slideshow-wrapper{position:relative;width:100%;height:100%}
+.slide{position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .5s var(--ease)}
+.slide.active{opacity:1}
+.slide-btn{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.7);color:#fff;border:none;padding:15px 20px;font-size:24px;cursor:pointer;z-index:10;transition:background .3s;border-radius:8px}
+.slide-btn:hover{background:rgba(255,215,0,.8);color:#000}
+.prev-btn{left:10px}
+.next-btn{right:10px}
+.slide-dots{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:10}
+.slide-dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:all .3s}
+.slide-dot.active{background:#FFD700;transform:scale(1.2)}
+
+/* CAMERA HUD OVERLAY */
+.hud-overlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:5}
+.corner-bracket{position:absolute;width:40px;height:40px;border:2px solid rgba(255,255,255,.7)}
+.corner-bracket.tl{top:15px;left:15px;border-right:none;border-bottom:none}
+.corner-bracket.tr{top:15px;right:15px;border-left:none;border-bottom:none}
+.corner-bracket.bl{bottom:15px;left:15px;border-right:none;border-top:none}
+.corner-bracket.br{bottom:15px;right:15px;border-left:none;border-top:none}
+
+.hud-top{position:absolute;top:20px;left:50%;transform:translateX(-50%);display:flex;gap:20px;font-family:var(--mono);font-size:.7rem;color:#fff}
+.rec-indicator{display:flex;align-items:center;gap:6px}
+.rec-indicator::before{content:"";width:8px;height:8px;border-radius:50%;background:#ff0000;animation:recBlink 1s infinite}
+@keyframes recBlink{50%{opacity:.3}}
+
+.hud-bottom{position:absolute;bottom:33px;left:20px;right:20px;display:flex;flex-direction:column;gap:10px}
+.timecode{font-family:var(--mono);font-size:.9rem;color:#fff;letter-spacing:.1em}
+.progress-bar{width:100%;height:3px;background:rgba(255,255,255,.3);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:#FFD700;width:0%;transition:width .1s linear}
+
+.film-grain{position:absolute;top:0;left:0;width:100%;height:100%;opacity:.05;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E")}
+
+/* ABOUT */
+.about-content{display:grid;grid-template-columns:1fr 280px;gap:40px;align-items:center}
+.profile-img{width:280px;height:280px;border-radius:16px;object-fit:cover;border:3px solid #FFD700;box-shadow:0 10px 30px #FFD7002e}
+
+/* SKILLS */
+.logo-orbit{position:relative;width:280px;height:280px;margin:0}
+.skills-layout{display:grid;grid-template-columns:300px 1fr 1fr;gap:50px;align-items:center;margin-top:40px}
+.orbit-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:100px;height:100px;display:flex;align-items:center;justify-content:center}
+.center-text{font-family:var(--display);font-size:1.5rem;font-weight:800;color:#FFD700;letter-spacing:.1em}
+.orbit-ring{position:absolute;top:0;left:0;width:100%;height:100%}
+.orbit-logo{position:absolute;width:54px;height:54px;object-fit:contain;top:50%;left:50%;margin-top:-27px;margin-left:-27px;
+  animation:orbit 20s linear infinite;animation-delay:calc(var(--i) * -2.857s);background:#1a1a1a;border-radius:10px;padding:6px;box-sizing:border-box}
+@keyframes orbit{from{transform:rotate(0deg) translateX(120px) rotate(0deg)}to{transform:rotate(360deg) translateX(120px) rotate(-360deg)}}
+
+/* HOME */
+.home{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;min-height:calc(100vh - 46px - 176px - 104px)}
+.stats{display:flex;gap:32px;margin:10px 0 28px;flex-wrap:wrap}
+.stats div{border-left:1px solid var(--line);padding-left:16px}
+.stats b{display:block;font-family:var(--display);font-size:1.8rem;font-weight:800;line-height:1}
+.stats span{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+.monitor{aspect-ratio:16/10;border-radius:16px;background:#050505;border:1px solid #ffffff40;position:relative;display:grid;place-items:center;
+  box-shadow:0 30px 70px #000,0 0 0 8px #101010,0 0 0 9px #ffffff1f}
+.monitor .c{position:absolute;width:20px;height:20px;border:2px solid #fff}
+.monitor .tl{top:14px;left:14px;border-right:0;border-bottom:0}
+.monitor .tr{top:14px;right:14px;border-left:0;border-bottom:0}
+.monitor .bl{bottom:14px;left:14px;border-right:0;border-top:0}
+.monitor .br{bottom:14px;right:14px;border-left:0;border-top:0}
+.monitor .big{width:60px;height:60px;border-radius:50%;background:#fff;display:grid;place-items:center;animation:pulse 2.6s infinite;transition:.3s var(--ease)}
+.monitor:hover .big{transform:scale(1.12)}
+.monitor .big::after{content:"";border-left:18px solid #000;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+@keyframes pulse{50%{box-shadow:0 0 0 24px #ffffff26}}
+.hud{position:absolute;left:40px;right:40px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;color:#fff}
+.hud.top{top:18px}.hud.bottom{bottom:18px}
+.rec{display:flex;align-items:center;gap:8px}
+.rec::before{content:"";width:9px;height:9px;border-radius:50%;background:#fff;animation:blink 1.1s infinite}
+.mini{position:absolute;left:52px;right:52px;bottom:56px;height:3px;background:#ffffff26;border-radius:3px;overflow:hidden}
+.mini i{display:block;height:100%;width:34%;background:#fff;animation:scrub 6s linear infinite}
+@keyframes scrub{from{margin-left:-34%}to{margin-left:100%}}
+
+.ticker{margin-top:36px;overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px 0;white-space:nowrap}
+.ticker div{display:inline-block;animation:slide 28s linear infinite;font-family:var(--mono);font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.ticker span{margin:0 26px}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* WORKS */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px}
+.card{display:block;text-decoration:none;background:var(--bar);border:1px solid var(--line);border-radius:18px;padding:20px;transition:.35s var(--ease);position:relative;overflow:hidden}
+.card:hover{transform:translateY(-8px);background:#fff;color:#000;border-color:#fff;box-shadow:0 24px 50px #ffffff1f}
+.card h3{font-size:1.15rem;margin-bottom:6px}
+.card p{font-size:.88rem;color:var(--muted);transition:.3s}
+.card:hover p{color:#333}
+.thumb{font-family:var(--display);height:128px;border-radius:12px;margin-bottom:16px;display:grid;place-items:center;font-size:1.8rem;font-weight:800;letter-spacing:.14em;position:relative;transition:.35s var(--ease)}
+.card:hover .thumb{transform:scale(.97)}
+.card:nth-child(4n+1) .thumb{background:#fff;color:#000}
+.card:nth-child(4n+2) .thumb{background:#bdbdbd;color:#000}
+.card:nth-child(4n+3) .thumb{background:#5c5c5c;color:#fff}
+.card:nth-child(4n) .thumb{background:#2e2e2e;color:#fff}
+.card:hover .thumb{background:#000!important;color:#fff!important}
+.panel.on .card{animation:rise .6s var(--ease) both}
+.panel.on .card:nth-child(1){animation-delay:.05s}.panel.on .card:nth-child(2){animation-delay:.1s}
+.panel.on .card:nth-child(3){animation-delay:.15s}.panel.on .card:nth-child(4){animation-delay:.2s}
+.panel.on .card:nth-child(5){animation-delay:.25s}.panel.on .card:nth-child(6){animation-delay:.3s}
+.panel.on .card:nth-child(7){animation-delay:.35s}.panel.on .card:nth-child(8){animation-delay:.4s}
+
+/* SKILLS */
+.tools{max-width:960px}
+.tool{font-family:var(--mono);display:grid;grid-template-columns:160px 1fr 48px;align-items:center;gap:14px;margin-bottom:14px;font-size:.85rem}
+.tool em{font-style:normal;color:#fff;text-align:right;font-weight:700;font-size:.9rem;letter-spacing:.02em}
+.bar{height:5px;border-radius:6px;background:#ffffff14;overflow:hidden;border:1px solid var(--line)}
+.bar i{display:block;height:100%;border-radius:6px;background:#FFD700;width:0;transition:width 1.3s var(--ease) .2s}
+.panel.on .bar i{width:var(--w)}
+.skill-tags{display:flex;flex-wrap:wrap;align-content:flex-start;gap:10px}
+.skill-tag{font-family:var(--mono);font-size:.78rem;padding:8px 14px;border-radius:30px;border:1px solid var(--line);color:var(--muted);letter-spacing:.04em;transition:.25s var(--ease);cursor:default}
+.skill-tag:hover{background:#FFD700;color:#000;border-color:#FFD700;transform:translateY(-2px)}
+
+/* INSTAGRAM */
+.list{list-style:none;display:grid;gap:12px;max-width:860px;counter-reset:n}
+.list li{counter-increment:n;background:var(--bar);border:1px solid var(--line);border-radius:14px;padding:16px 20px 16px 62px;font-size:.98rem;
+  position:relative;transition:.3s var(--ease)}
+.list li::before{content:counter(n,decimal-leading-zero);position:absolute;left:20px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:.78rem;color:var(--dim);transition:.3s}
+.list li:hover{transform:translateX(12px);background:#fff;color:#000;border-color:#fff}
+.list li:hover::before{color:#000}
+.handle{display:inline-block;font-family:var(--mono);border:1px solid #fff;border-radius:30px;padding:6px 14px;font-size:.88rem;color:#fff}
+
+/* CONTACT */
+.mail{display:block;font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,4.6vw,3.8rem);letter-spacing:-.02em;text-decoration:none;
+  border-bottom:2px solid #fff;padding-bottom:10px;margin:8px 0 34px;max-width:max-content;transition:.3s var(--ease)}
+.mail:hover{background:#fff;color:#000;padding:0 14px 10px}
+
+/* TIMELINE */
+.timeline{background:var(--win);border-top:1px solid var(--line);padding:12px 20px 14px;position:relative;overflow:hidden}
+.ruler{display:flex;justify-content:space-between;font-size:.66rem;font-family:var(--mono);color:var(--dim);margin-bottom:8px;padding:0 2px}
+.tracks{position:relative}
+.track{display:flex;gap:5px;height:48px;margin-bottom:7px}
+.clip{font-family:var(--mono);flex:1;border-radius:9px;font-size:.76rem;letter-spacing:.04em;display:flex;align-items:center;padding:0 14px;white-space:nowrap;overflow:hidden;
+  background:#fff;color:#000;border:1px solid #ffffff22;transition:.25s var(--ease)}
+.clip:nth-child(2n){background:#bdbdbd;color:#000}
+.clip:nth-child(3n){background:#4a4a4a;color:#fff}
+.clip:hover{transform:translateY(-3px)}
+.clip.on{box-shadow:0 0 0 2px #000,0 0 0 4px #fff;transform:translateY(-3px)}
+.audio{height:34px;border-radius:9px;background:#111;border:1px solid #ffffff14;display:flex;align-items:center;gap:2px;padding:0 6px;overflow:hidden}
+.audio i{flex:1;background:#fff;border-radius:2px;min-width:2px;opacity:.7;animation:wave 1.2s ease-in-out infinite}
+@keyframes wave{50%{transform:scaleY(.35)}}
+.playhead{position:absolute;top:-6px;bottom:0;width:2px;background:#fff;left:0;transition:left .7s var(--ease);pointer-events:none;z-index:3}
+.playhead::before{content:"";position:absolute;top:0;left:-6px;border:7px solid transparent;border-top-color:#fff;border-bottom:0}
+
+/* RESPONSIVE */
+@media(max-width:1000px){.home{grid-template-columns:1fr;gap:34px;min-height:0}}
+@media(max-width:700px){
+  .app{grid-template-rows:40px 1fr 128px}
+  .body{grid-template-columns:1fr;grid-template-rows:1fr 64px}
+  .rail{order:2;flex-direction:row;border-right:0;border-top:1px solid var(--line);padding:6px;justify-content:space-around}
+  .rail button{padding:6px 8px;font-size:.62rem}
+  .rail button b{display:none}
+  .stage{padding:28px 20px}
+  .tool{grid-template-columns:100px 1fr 40px;gap:10px}
+  .clip{font-size:0;padding:0}
+  .title b{display:none}
+  .title .open{margin-left:auto}
+  .hud{left:30px;right:30px}.mini{left:30px;right:30px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* TOP TICKER */
+.ticker-top{overflow:hidden;border-bottom:1px solid var(--line);padding:10px 0;white-space:nowrap;background:var(--win)}
+.ticker-top div{display:inline-block;animation:slide 28s linear infinite;font-family:var(--mono);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+.ticker-top span{margin:0 40px}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="title">
+    <span class="dot" style="background:#fff"></span><span class="dot" style="background:#8a8a8a"></span><span class="dot" style="background:#444"></span>
+    <b>ROHITH C R</b>
+    <span class="open">OPEN FOR WORK</span>
+  </div>
+
+  <div class="ticker-top"><div id="tick-top"></div></div>
+
+  <div class="body">
+    <nav class="rail" id="rail">
+      <button data-p="home" class="on"><b>01</b>Home</button>
+      <button data-p="about"><b>02</b>About</button>
+      <button data-p="skills"><b>03</b>Skills</button>
+      <button data-p="insta"><b>04</b>Experience</button>
+      <button data-p="works"><b>05</b>Media</button>
+      <button data-p="contact"><b>06</b>Export</button>
+    </nav>
+
+    <main class="stage" id="stage">
+
+      <section class="panel on" id="home">
+        <div class="home">
+          <div>
+            <div class="tag">Video Editor &amp; Graphic Designer</div>
+            <h1>I cut stories that <span class="g">stop the scroll.</span></h1>
+            <p class="sub">I'm Rohith C R. Three years of turning raw footage and rough ideas into sharp videos and bold visuals that build brands.</p>
+            <div class="stats">
+              <div><b>6 Months</b><span>Experience</span></div>
+              <div><b>2+ Years</b><span>Freelancing</span></div>
+            </div>
+            <button class="btn" data-go="works">Open Media</button>
+            <button class="btn ghost" data-go="contact">Hire Me</button>
+            <a class="btn ghost" href="Rohith_CR_Resume.pdf" target="_blank">Resume</a>
+          </div>
+          <div class="slideshow-container">
+            <div class="slideshow-wrapper">
+              <video class="slide active" autoplay muted loop playsinline>
+                <source src="media/2.landscape_Reel_Edits/FINAL.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/2.landscape_Reel_Edits/cr7.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/2.landscape_Reel_Edits/finalfinal.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/2.landscape_Reel_Edits/guest.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/3.Long_Video/0128(1).mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/3.Long_Video/1111111111111.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/3.Long_Video/abtkec2.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/3.Long_Video/ft final.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/3.Long_Video/oil.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/3.Long_Video/singin final.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/4.Logo Reveal/Logo.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/4.Logo Reveal/kec logo.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/4.Logo Reveal/logo1.mp4" type="video/mp4">
+              </video>
+              <video class="slide" autoplay muted loop playsinline>
+                <source src="media/4.Logo Reveal/logo2.mp4" type="video/mp4">
+              </video>
+            </div>
+            
+            <!-- Camera HUD Overlay -->
+            <div class="hud-overlay">
+              <div class="corner-bracket tl"></div>
+              <div class="corner-bracket tr"></div>
+              <div class="corner-bracket bl"></div>
+              <div class="corner-bracket br"></div>
+              
+              <div class="hud-top">
+                <span class="rec-indicator">REC</span>
+                <span class="resolution">4K / 24 FPS</span>
+              </div>
+              
+              <div class="hud-bottom">
+                <span class="timecode" id="slideshowTimecode">00:00:00:00</span>
+                <div class="progress-bar">
+                  <div class="progress-fill" id="slideProgress"></div>
+                </div>
+              </div>
+              
+              <div class="film-grain"></div>
+            </div>
+            
+            <button class="slide-btn prev-btn">&lt;</button>
+            <button class="slide-btn next-btn">&gt;</button>
+            <div class="slide-dots"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="about">
+        <div class="tag">Inspector</div>
+        <h2>About <span class="g">me</span></h2>
+        <div class="about-content">
+          <div>
+            <p class="sub">I'm a video editor and graphic designer with over three years of hands-on experience. I cut reels, design posters and logos, animate text, write scripts, and build AI-assisted videos. I also run Instagram pages end to end. Every project starts with one question: what will make people stop and watch?</p>
+            <div>
+              <span class="chip">6 Months Experience</span><span class="chip">2+ Years Freelancing</span><span class="chip">Video editing</span><span class="chip">Poster &amp; logo design</span><span class="chip">Content editing</span><span class="chip">Podcast editing</span>
+              <span class="chip">Text animation</span><span class="chip">Script writing</span><span class="chip">AI video</span><span class="chip">Instagram management</span>
+            </div>
+          </div>
+          <img src="1.jpg" alt="Rohith C R" class="profile-img">
+        </div>
+      </section>
+
+      <section class="panel" id="skills">
+        <div class="tag">Effects &amp; Plugins</div>
+        <h2>Tools I <span class="g">master</span></h2>
+        <div class="skills-layout">
+          <div class="logo-orbit">
+            <div class="orbit-center">
+              <span class="center-text">TOOLS</span>
+            </div>
+            <div class="orbit-ring">
+              <img src="logo/adobe-after-effects.png" alt="After Effects" class="orbit-logo" style="--i:0">
+              <img src="logo/adobe-photoshop-logo-2.png" alt="Photoshop" class="orbit-logo" style="--i:1">
+              <img src="logo/capcut.png" alt="CapCut" class="orbit-logo" style="--i:2">
+              <img src="logo/canva.png" alt="Canva" class="orbit-logo" style="--i:3">
+              <img src="logo/figma.png" alt="Figma" class="orbit-logo" style="--i:4">
+              <img src="logo/adobe-Illustrator-logo-0-1.png" alt="Illustrator" class="orbit-logo" style="--i:5">
+              <img src="logo/davanci.png" alt="DaVinci Resolve" class="orbit-logo" style="--i:6">
+            </div>
+          </div>
+          <div class="tools">
+            <div class="tool"><span>DaVinci Resolve</span><div class="bar"><i style="--w:80%"></i></div><em>80%</em></div>
+            <div class="tool"><span>After Effects</span><div class="bar"><i style="--w:70%"></i></div><em>70%</em></div>
+            <div class="tool"><span>CapCut</span><div class="bar"><i style="--w:90%"></i></div><em>90%</em></div>
+            <div class="tool"><span>Photoshop</span><div class="bar"><i style="--w:85%"></i></div><em>85%</em></div>
+            <div class="tool"><span>Illustrator</span><div class="bar"><i style="--w:75%"></i></div><em>75%</em></div>
+            <div class="tool"><span>Canva</span><div class="bar"><i style="--w:90%"></i></div><em>90%</em></div>
+            <div class="tool"><span>Figma</span><div class="bar"><i style="--w:95%"></i></div><em>95%</em></div>
+          </div>
+          <div class="skill-tags">
+            <span class="skill-tag">Video editing</span>
+            <span class="skill-tag">Poster &amp; logo design</span>
+            <span class="skill-tag">Content editing</span>
+            <span class="skill-tag">Podcast editing</span>
+            <span class="skill-tag">Text animation</span>
+            <span class="skill-tag">Script writing</span>
+            <span class="skill-tag">AI video</span>
+            <span class="skill-tag">Instagram management</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="works">
+        <div class="tag">Media Pool</div>
+        <h2>Selected <span class="g">works</span></h2>
+        <div class="media-filter-buttons">
+          <button class="filter-btn active" data-filter="videos">Videos Work</button>
+          <button class="filter-btn" data-filter="graphics">Graphic Work</button>
+        </div>
+        
+        <div class="media-category" data-category="videos">
+          <h3>Portrait Reel Edits</h3>
+          <div class="media-grid">
+            <video controls src="media/1.portarate_Reel_Edits/Gym_Reel1.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/Minds_Trust_Reel1.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/Minds_Trust_Reel2.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/Minds_Trust_Reel3.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/Sri_Swasthi_KG_Tech_reel1.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/Sri_Swasthi_KG_Tech_reel2.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/final1.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/flyer_holidays.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/god_s forge_1.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/god_s forge_2.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/pgi.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/posertmadc.mp4"></video>
+            <video controls src="media/1.portarate_Reel_Edits/zzFreelancing.mov"></video>
+          </div>
+        </div>
+
+        <div class="media-category" data-category="videos">
+          <h3>Landscape Reel Edits</h3>
+          <div class="media-grid grid-4">
+            <video controls src="media/2.landscape_Reel_Edits/FINAL.mp4"></video>
+            <video controls src="media/2.landscape_Reel_Edits/cr7.mp4"></video>
+            <video controls src="media/2.landscape_Reel_Edits/finalfinal.mp4"></video>
+            <video controls src="media/2.landscape_Reel_Edits/guest.mp4"></video>
+          </div>
+        </div>
+
+        <div class="media-category" data-category="videos">
+          <h3>Long Videos</h3>
+          <div class="media-grid grid-4">
+            <video controls src="media/3.Long_Video/0128(1).mp4"></video>
+            <video controls src="media/3.Long_Video/1111111111111.mp4"></video>
+            <video controls src="media/3.Long_Video/abtkec2.mp4"></video>
+            <video controls src="media/3.Long_Video/ft final.mp4"></video>
+            <video controls src="media/3.Long_Video/oil.mp4"></video>
+            <video controls src="media/3.Long_Video/singin final.mp4"></video>
+          </div>
+        </div>
+
+        <div class="media-category" data-category="videos">
+          <h3>Logo Reveals</h3>
+          <div class="media-grid grid-4">
+            <video controls src="media/4.Logo Reveal/Logo.mp4"></video>
+            <video controls src="media/4.Logo Reveal/kec logo.mp4"></video>
+            <video controls src="media/4.Logo Reveal/logo1.mp4"></video>
+            <video controls src="media/4.Logo Reveal/logo2.mp4"></video>
+          </div>
+        </div>
+
+        <div class="media-category" data-category="videos">
+          <h3>Diecast Co</h3>
+          <div class="media-grid">
+            <video controls src="media/5.Diecast_co/Reel_1.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_11.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_12.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_13.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_14.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_2.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_3.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_4.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_6.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_7.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_8.mp4"></video>
+            <video controls src="media/5.Diecast_co/Reel_9.mp4"></video>
+          </div>
+        </div>
+
+        <div class="media-category" data-category="videos">
+          <h3>AI Videos</h3>
+          <div class="media-grid">
+            <video controls src="media/6.Ai_video/video10.mp4"></video>
+            <video controls src="media/6.Ai_video/video11.mp4"></video>
+            <video controls src="media/6.Ai_video/video12.mp4"></video>
+            <video controls src="media/6.Ai_video/video13.mp4"></video>
+            <video controls src="media/6.Ai_video/video14.mp4"></video>
+            <video controls src="media/6.Ai_video/video15.mp4"></video>
+            <video controls src="media/6.Ai_video/video16.mp4"></video>
+            <video controls src="media/6.Ai_video/video21.mp4"></video>
+            <video controls src="media/6.Ai_video/video22.mp4"></video>
+            <video controls src="media/6.Ai_video/video23.mp4"></video>
+            <video controls src="media/6.Ai_video/video24.mp4"></video>
+            <video controls src="media/6.Ai_video/video25.mp4"></video>
+          </div>
+        </div>
+
+        <div class="media-category" data-category="graphics">
+          <h3>Logo</h3>
+          <div class="media-grid">
+            <img src="media/7.logo/Frame 4.png" alt="Logo">
+            <img src="media/7.logo/Frame 6.png" alt="Logo">
+            <img src="media/7.logo/Money_Lender1.jpg" alt="Logo">
+            <img src="media/7.logo/gf & God's Forge.jpg" alt="Logo">
+          </div>
+        </div>
+
+        <div class="media-category" data-category="graphics">
+          <h3>Poster</h3>
+          <div class="media-grid">
+            <img src="media/8.poster/40th incetion.png" alt="Poster">
+            <img src="media/8.poster/Congratulations (7).jpg" alt="Poster">
+            <img src="media/8.poster/Cricket.jpg" alt="Poster">
+            <img src="media/8.poster/MADC Poster .png" alt="Poster">
+            <img src="media/8.poster/Rohith.jpg" alt="Poster">
+            <img src="media/8.poster/WORKSHOP SERIES.jpg" alt="Poster">
+            <img src="media/8.poster/department.jpg" alt="Poster">
+            <img src="media/8.poster/into_shop_poster.jpg" alt="Poster">
+            <img src="media/8.poster/it (2).jpg" alt="Poster">
+            <img src="media/8.poster/it(1).jpg" alt="Poster">
+            <img src="media/8.poster/placement.jpg" alt="Poster">
+            <img src="media/8.poster/raghul.p.jpg" alt="Poster">
+            <img src="media/8.poster/unnamed.jpg" alt="Poster">
+          </div>
+        </div>
+
+        <div class="media-category" data-category="graphics">
+          <h3>Thumbnail</h3>
+          <div class="media-grid">
+            <img src="media/9.Thumbline/Android Compact - 1.jpg" alt="Thumbnail">
+            <img src="media/9.Thumbline/Android Compact - 10.jpg" alt="Thumbnail">
+            <img src="media/9.Thumbline/Android Compact - 11.jpg" alt="Thumbnail">
+            <img src="media/9.Thumbline/Android Compact - 12.jpg" alt="Thumbnail">
+            <img src="media/9.Thumbline/Android Compact - 3.jpg" alt="Thumbnail">
+            <img src="media/9.Thumbline/Android Compact - 6.jpg" alt="Thumbnail">
+            <img src="media/9.Thumbline/Android Compact - 7.jpg" alt="Thumbnail">
+            <img src="media/9.Thumbline/Android Compact - 8.jpg" alt="Thumbnail">
+            <img src="media/9.Thumbline/Android Compact - 9.jpg" alt="Thumbnail">
+          </div>
+        </div>
+
+        <div class="media-category" data-category="graphics">
+          <h3>Certificates Designed</h3>
+          <div class="media-grid">
+            <img src="media/10.Certificates_designed/Full Stack  Development.jpg" alt="Certificate">
+            <img src="media/10.Certificates_designed/_Inception  Day.jpg" alt="Certificate">
+            <img src="media/10.Certificates_designed/_prize (1).png" alt="Certificate">
+            <img src="media/10.Certificates_designed/aws.png" alt="Certificate">
+            <img src="media/10.Certificates_designed/codeathon'24 (1).png" alt="Certificate">
+            <img src="media/10.Certificates_designed/codeathon_24 (1).png" alt="Certificate">
+            <img src="media/10.Certificates_designed/participating.png" alt="Certificate">
+          </div>
+        </div>
+
+        <div class="media-category" data-category="graphics">
+          <h3>Script</h3>
+          <div class="media-grid">
+            <a href="media/11.Script/Script.pdf" target="_blank" class="script-link">
+              <div class="script-card">
+                <span>Script.pdf</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="insta">
+        <div class="tag">Analytics</div>
+        <div class="section-header">
+          <h2>Video Editor at <span class="g">Secuvra</span></h2>
+          <a class="btn" href="Internship/internship_cert.pdf" target="_blank">View Certificate</a>
+        </div>
+        <p class="sub">April 2026 – October 2026</p>
+        <p class="sub">Edited videos for multiple clients, adapting content to their requirements, objectives, and target audiences. Transformed raw footage into engaging visual stories through structured sequencing, pacing, transitions, and visual composition. Used visual storytelling techniques to communicate ideas, convey emotions, and maintain audience engagement. Refined video content through editing, sound synchronization, and visual enhancements to improve overall quality. Managed editing tasks while maintaining attention to detail, creativity, and client expectations.</p>
+
+        <div class="section-header" style="margin-top:40px">
+          <h2>Freelance Video Editor & Graphic Designer at <span class="g">The God's Forge</span></h2>
+        </div>
+        <p class="sub">Currently</p>
+        <p class="sub">I work to visualize their products, design logos for their products, and create posters and videos. I manage their social media page, creating engaging content to grow their online presence. I develop creative visual concepts that align with brand identity and marketing objectives. I produce high-quality video content including product showcases, promotional videos, and social media content. I design professional logos and branding materials that establish strong visual identity. I create eye-catching posters and digital graphics for marketing campaigns and product launches. I collaborate closely with clients to understand their vision and deliver tailored visual solutions. I manage multiple projects simultaneously while maintaining high standards and meeting deadlines.</p>
+
+        <div class="section-header" style="margin-top:40px">
+          <h2>Freelance Video Editor at <span class="g">The Diecast Co</span></h2>
+          <a class="btn" href="https://www.instagram.com/the_diecast_co_/reels/" target="_blank">View Reels</a>
+        </div>
+        <p class="sub">Currently</p>
+        <p class="sub">Managing their social media page, creating engaging content to grow their online presence. I produce scroll-stopping reels and videos that drive reach and watch time. I design promotional posters that turn viewers into buyers. I handle lead generation that brings in real enquiries. I ensure steady follower growth through consistent content strategy. I provide direct client handling with fast and clear communication.</p>
+      </section>
+
+      <section class="panel" id="contact">
+        <div class="tag">Export</div>
+        <h2>Ready to <span class="g">render your idea?</span></h2>
+        <a class="mail" href="mailto:rohithrt1402@gmail.com">rohithrt1402@gmail.com</a>
+        <p class="sub">Tell me your project. I'll turn it into something people can't scroll past.</p>
+        <a class="btn" href="mailto:rohithrt1402@gmail.com">Email Me</a>
+        <a class="btn ghost" href="https://www.instagram.com/cr__visuals_/" target="_blank">Instagram</a>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Video Modal -->
+  <div id="videoModal" class="video-modal">
+    <span class="close-modal">&times;</span>
+    <video id="modalVideo" controls></video>
+  </div>
+
+  <div class="timeline">
+    <div class="ruler"><span>00:00</span><span>00:10</span><span>00:20</span><span>00:30</span><span>00:40</span><span>00:50</span></div>
+    <div class="tracks" id="tracks">
+      <div class="playhead" id="ph"></div>
+      <div class="track" id="clips">
+        <button class="clip on" data-p="home">Home</button>
+        <button class="clip" data-p="about">About</button>
+        <button class="clip" data-p="skills">Skills</button>
+        <button class="clip" data-p="insta">Experience</button>
+        <button class="clip" data-p="works">Media</button>
+        <button class="clip" data-p="contact">Export</button>
+      </div>
+      <div class="audio" id="audio"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const order=['home','about','skills','insta','works','contact'];
+const panels=document.querySelectorAll('.panel');
+const railBtns=document.querySelectorAll('#rail button');
+const clips=document.querySelectorAll('#clips .clip');
+const ph=document.getElementById('ph'),tracks=document.getElementById('tracks'),stage=document.getElementById('stage');
+
+function go(id){
+  panels.forEach(p=>p.classList.toggle('on',p.id===id));
+  railBtns.forEach(b=>b.classList.toggle('on',b.dataset.p===id));
+  clips.forEach(c=>c.classList.toggle('on',c.dataset.p===id));
+  const i=order.indexOf(id),w=tracks.clientWidth;
+  ph.style.left=(w/order.length*(i+.5))+'px';
+  stage.scrollTop=0;
+}
+document.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.p)));
+document.querySelectorAll('[data-go]').forEach(b=>{
+  b.addEventListener('click',()=>go(b.dataset.go));
+  b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go(b.dataset.go)}});
+});
+addEventListener('resize',()=>go(document.querySelector('.panel.on').id));
+document.addEventListener('keydown',e=>{
+  const i=order.indexOf(document.querySelector('.panel.on').id);
+  if(e.key==='ArrowRight')go(order[Math.min(i+1,order.length-1)]);
+  if(e.key==='ArrowLeft')go(order[Math.max(i-1,0)]);
+});
+
+// live timecode
+const tc=document.getElementById('tc'),t0=performance.now();
+const pad=n=>String(n).padStart(2,'0');
+setInterval(()=>{
+  const t=(performance.now()-t0)/1000,f=Math.floor((t%1)*24);
+  tc.textContent=`${pad(Math.floor(t/3600))}:${pad(Math.floor(t/60)%60)}:${pad(Math.floor(t)%60)}:${pad(f)}`;
+},42);
+
+// ticker
+const words=['6 Months Experience','2+ Years Freelancing','Video editing','Poster & logo design','Content editing','Podcast editing','Text animation','Script writing','AI video','Instagram management'];
+const row=words.map(w=>`<span>${w}</span><span>/</span>`).join('');
+document.getElementById('tick-top').innerHTML=row+row;
+
+// waveform
+const au=document.getElementById('audio');
+for(let i=0;i<110;i++){const s=document.createElement('i');s.style.height=(25+Math.random()*75)+'%';s.style.animationDelay=(Math.random()*1.2)+'s';au.appendChild(s)}
+go('home');
+
+// Video Modal
+const modal=document.getElementById('videoModal');
+const modalVideo=document.getElementById('modalVideo');
+const closeModal=document.querySelector('.close-modal');
+
+document.querySelectorAll('.media-grid video').forEach(video=>{
+  video.addEventListener('click',function(){
+    modalVideo.src=this.src;
+    modal.classList.add('active');
+    modalVideo.play();
+  });
+});
+
+closeModal.addEventListener('click',function(){
+  modal.classList.remove('active');
+  modalVideo.pause();
+  modalVideo.src='';
+});
+
+modal.addEventListener('click',function(e){
+  if(e.target===modal){
+    modal.classList.remove('active');
+    modalVideo.pause();
+    modalVideo.src='';
+  }
+});
+
+// Slideshow
+const slides=document.querySelectorAll('.slide');
+const prevBtn=document.querySelector('.prev-btn');
+const nextBtn=document.querySelector('.next-btn');
+const dotsContainer=document.querySelector('.slide-dots');
+let currentSlide=0;
+let slideInterval;
+
+// Create dots
+slides.forEach((_,index)=>{
+  const dot=document.createElement('div');
+  dot.className='slide-dot'+(index===0?' active':'');
+  dot.addEventListener('click',()=>goToSlide(index));
+  dotsContainer.appendChild(dot);
+});
+
+const dots=document.querySelectorAll('.slide-dot');
+
+function showSlide(index){
+  slides.forEach(slide=>slide.classList.remove('active'));
+  dots.forEach(dot=>dot.classList.remove('active'));
+  slides[index].classList.add('active');
+  dots[index].classList.add('active');
+  currentSlide=index;
+}
+
+function nextSlide(){
+  currentSlide=(currentSlide+1)%slides.length;
+  showSlide(currentSlide);
+}
+
+function prevSlide(){
+  currentSlide=(currentSlide-1+slides.length)%slides.length;
+  showSlide(currentSlide);
+}
+
+function goToSlide(index){
+  showSlide(index);
+  resetInterval();
+}
+
+function resetInterval(){
+  clearInterval(slideInterval);
+  slideInterval=setInterval(nextSlide,3000);
+}
+
+prevBtn.addEventListener('click',()=>{
+  prevSlide();
+  resetInterval();
+});
+
+nextBtn.addEventListener('click',()=>{
+  nextSlide();
+  resetInterval();
+});
+
+// Start auto-play
+slideInterval=setInterval(nextSlide,3000);
+
+// Timecode and progress bar
+const timecodeEl=document.getElementById('slideshowTimecode');
+const progressEl=document.getElementById('slideProgress');
+let slideStartTime=Date.now();
+const slideDuration=3000;
+
+function updateTimecode(){
+  const elapsed=Date.now()-slideStartTime;
+  const progress=Math.min((elapsed/slideDuration)*100,100);
+  progressEl.style.width=progress+'%';
+  
+  const totalSeconds=Math.floor(elapsed/1000);
+  const hours=Math.floor(totalSeconds/3600);
+  const minutes=Math.floor((totalSeconds%3600)/60);
+  const seconds=totalSeconds%60;
+  const frames=Math.floor((elapsed%1000)/41.67);
+  
+  const pad=n=>String(n).padStart(2,'0');
+  timecodeEl.textContent=`${pad(hours)}:${pad(minutes)}:${pad(seconds)}:${pad(frames)}`;
+  
+  requestAnimationFrame(updateTimecode);
+}
+
+// Reset progress on slide change
+const originalShowSlide=showSlide;
+showSlide=function(index){
+  originalShowSlide(index);
+  slideStartTime=Date.now();
+};
+
+updateTimecode();
+
+// Media Filter
+const filterBtns=document.querySelectorAll('.filter-btn');
+const mediaCategories=document.querySelectorAll('.media-category');
+
+filterBtns.forEach(btn=>{
+  btn.addEventListener('click',function(){
+    filterBtns.forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    
+    const filter=this.dataset.filter;
+    
+    mediaCategories.forEach(category=>{
+      if(filter==='all'||category.dataset.category===filter){
+        category.classList.remove('hidden');
+      }else{
+        category.classList.add('hidden');
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
