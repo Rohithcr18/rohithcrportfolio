@@ -1,0 +1,10 @@
+# Media files (too large for GitHub)
+media/
+
+# Keep only essential files
+!portfolio-app.html
+!README.md
+!Rohith_CR_Resume.pdf
+!1.jpg
+!logo/
+!Internship/
