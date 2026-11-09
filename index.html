@@ -26,7 +26,7 @@ a{color:inherit}
 *{scrollbar-width:thin;scrollbar-color:#444 transparent}
 
 /* WINDOW */
-.app{width:100vw;height:100vh;background:var(--win);display:grid;grid-template-rows:46px 36px 1fr 130px}
+.app{width:100vw;height:100vh;height:100dvh;background:var(--win);display:grid;grid-template-rows:46px 36px 1fr 130px}
 .title{font-family:var(--mono);background:var(--bar);display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid var(--line);font-size:.78rem;color:var(--muted)}
 .dot{width:12px;height:12px;border-radius:50%}
 .title b{margin:0 auto;font-weight:500;letter-spacing:.06em}
@@ -239,9 +239,14 @@ p.sub{color:var(--muted);font-size:1.08rem;max-width:100%;margin-bottom:30px;lin
 .playhead::before{content:"";position:absolute;top:0;left:-6px;border:7px solid transparent;border-top-color:#fff;border-bottom:0}
 
 /* RESPONSIVE */
-@media(max-width:1000px){.home{grid-template-columns:1fr;gap:34px;min-height:0}}
+@media(max-width:1000px){
+  .home{grid-template-columns:1fr;gap:34px;min-height:0}
+  .skills-layout{grid-template-columns:1fr;gap:32px}
+  .media-grid{grid-template-columns:repeat(3,1fr)}
+  .media-grid.grid-4{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:700px){
-  .app{grid-template-rows:40px 1fr 128px}
+  .app{grid-template-rows:40px auto minmax(0,1fr) 128px}
   .body{grid-template-columns:1fr;grid-template-rows:1fr 64px}
   .rail{order:2;flex-direction:row;border-right:0;border-top:1px solid var(--line);padding:6px;justify-content:space-around}
   .rail button{padding:6px 8px;font-size:.62rem}
@@ -252,6 +257,11 @@ p.sub{color:var(--muted);font-size:1.08rem;max-width:100%;margin-bottom:30px;lin
   .title b{display:none}
   .title .open{margin-left:auto}
   .hud{left:30px;right:30px}.mini{left:30px;right:30px}
+  .about-content{grid-template-columns:1fr;gap:28px}
+  .profile-img{width:min(280px,100%);height:auto;aspect-ratio:1}
+  .media-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .media-grid.grid-4{grid-template-columns:1fr}
+  .mail{font-size:clamp(1rem,6.4vw,1.6rem);overflow-wrap:anywhere}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
